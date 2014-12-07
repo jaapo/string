@@ -1,6 +1,8 @@
 #include <iostream>
+#include "string.h"
 
 int main() {
-	std::cout << "pie" << std::endl;
+	string mystr;
+	std::cout << "pie yes" << mystr.getLength() << std::endl;
 	return 0;
 }
