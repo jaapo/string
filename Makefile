@@ -1,14 +1,17 @@
 export BIN_DIR = $(PWD)/bin/
 
-build:
+bin-dir:
+	mkdir -p $(BIN_DIR)
+
+build: bin-dir
 	make -C src
 
-build-prod:
+build-prod: bin-dir
 	make -C src build-prod
 
 test:
 	$(MAKE) -C src/test run-test
 
-clean:
-	rm bin/*
+clean: bin-dir
 	$(MAKE) -C src/test clean
+	rm bin/*

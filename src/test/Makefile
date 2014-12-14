@@ -1,6 +1,5 @@
 vpath %.o $(BIN_DIR)
 TEST_BIN_DIR = bin/
-BIN_FILES = bin/testdrv.o bin/string-test
 
 all: testdrv.o
 
@@ -20,4 +19,4 @@ run-test: string-test
 	bin/string-test
 
 clean:
-	rm $(BIN_FILES)
+	rm $(TEST_BIN_DIR)/*
