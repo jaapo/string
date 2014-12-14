@@ -12,11 +12,12 @@
 
 //private functions
 void String::reset() {
-	length_ = 0;
-	size_ = 0;
-	if (content_ != NULL) {
+	if (content_ != NULL && size_ > 0) {
 		delete [] content_;
 	}
+	content_ = NULL;
+	length_ = 0;
+	size_ = 0;
 }
 
 bool String::check() {
@@ -28,6 +29,7 @@ bool String::check() {
 void String::resize(size_t new_size) {
 	if (size_ >= new_size) return;
 	Assert(new_size >= length_);
+	Assert(length_ <= size_);
 
 	char* new_content = new char[new_size];
 
@@ -66,23 +68,18 @@ String::String(size_t size): length_(0), content_(NULL), size_(size) {
 }
 
 //string literal constructor
-String::String(char* literal) {
+String::String(char* literal): size_(0), content_(NULL), length_(0) {
 	size_t len = 0;
 	while(literal[len]) len++;
 
 	if(len == 0) {
-		content_ = NULL;
-		reset();
 		return;
 	}
-
 	length_ = len;
 	size_ = len;
 	content_ = new char[len];
 
-	for(size_t i = 0; i < len; i++) {
-		content_[i] = literal[i];
-	}
+	memcopy(literal, content_, len);
 
 	Assert(check());
 }
@@ -99,15 +96,14 @@ String::String(String const& a): length_(a.length_), size_(a.length_) {
 
 //move constructor
 String::String(String&& a): length_(a.length_), size_(a.size_), content_(a.content_) {
-	a.content_ = NULL;
-	a.reset();
+	length_ = 0;
+	size_ = 0;
+	content_ = NULL;
 }
 
 //destructor
 String::~String() {
-	if (content_ != NULL) {
-		delete [] content_;
-	}
+	reset();
 }
 
 //copy assignment
@@ -161,19 +157,18 @@ String operator+(String const& a, String const& b) {
 }
 
 String& String::operator+=(char const& a) {
+	resize(length_ + 1);
+	content_[length_] = a;
 	length_++;
-	resize(length_);
-	content_[length_ - 1] = a;
 
 	Assert(check());
 	return *this;
 }	
 
 String& String::operator+=(String const& a) {
-	size_t oldlen = length_;
+	resize(length_ + a.length_);
+	memcopy(a.content_, content_ + length_, a.length_);
 	length_ += a.length_;
-	resize(length_);
-	memcopy(a.content_, content_ + oldlen, a.length_);
 
 	Assert(check());
 	return *this;
@@ -206,13 +201,9 @@ std::ostream& operator<<(std::ostream& out, String const& a) {
 
 std::istream& operator>>(std::istream& in, String &a) {
 	char temp;
-	//size_t length = 0;
-
-	//a.reset();
 
 	//will read until EOF or error
 	while(in >> temp) {
-//		length++;
 		a += temp;
 	}
 

@@ -86,13 +86,11 @@ void TestSet::runAll() {
 	ok_ = 0;
 	fail_ = 0;
 
-	//for(auto test : tests_) {
-	for(int i = 0;i < tests_.size();i++) {
-		//std::cout << "running: " << tests_[i].desc() << std::endl;
-		tests_[i].run();
+	for(auto& test : tests_) {
+		test.run();
 		ran_++;
 
-		if (tests_[i].passed()) {
+		if (test.passed()) {
 			ok_++;
 		} else {
 			fail_++;
@@ -117,11 +115,7 @@ void TestSet::summary() {
 }
 
 void TestSet::details() {
-	/*for(int i = 0;i < tests_.size();i++) {
-			std::cout << tests_[i].passed() << std::endl;
-	}*/
-	for(auto test : tests_) {
-			//std::cout << test.passed() << std::endl;
+	for(auto& test : tests_) {
 			std::cout 
 				<< (test.passed() ? "ok    " : "fail  ")
 				<< test.desc()
