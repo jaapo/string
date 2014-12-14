@@ -96,9 +96,9 @@ String::String(String const& a): length_(a.length_), size_(a.length_) {
 
 //move constructor
 String::String(String&& a): length_(a.length_), size_(a.size_), content_(a.content_) {
-	length_ = 0;
-	size_ = 0;
-	content_ = NULL;
+	a.length_ = 0;
+	a.size_ = 0;
+	a.content_ = NULL;
 }
 
 //destructor

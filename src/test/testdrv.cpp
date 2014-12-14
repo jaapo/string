@@ -118,9 +118,10 @@ void TestSet::details() {
 	for(auto& test : tests_) {
 			std::cout 
 				<< (test.passed() ? "ok    " : "fail  ")
-				<< test.desc()
-				<< (test.passed() ? "" : "      "  +  test.result())
-			 << std::endl;
+				<< test.desc() << std::endl;
+			if (!test.passed()) {
+				std::cout << "  ===>    " << test.result() << std::endl;
+			}
 	}
 	std::cout << std::endl;
 }
