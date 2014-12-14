@@ -357,6 +357,6 @@ int main() {
 	tests.addTest(Test("iterators throws", testIteratorsThrow));
 
 	tests.runAll();
-	tests.summary();
 	tests.details();
+	tests.summary();
 }

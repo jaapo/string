@@ -137,6 +137,9 @@ size_t String::size() const {
 //operators
 String operator+(String const& a, String const& b) {
 	size_t new_len = a.length_ + b.length_;
+	if (new_len < a.length_) {
+		throw std::overflow_error("overflow detected concatenating strings with + operator");
+	}
 	char* new_content = new char[new_len];
 
 	String new_string;
@@ -166,6 +169,9 @@ String& String::operator+=(char const& a) {
 }	
 
 String& String::operator+=(String const& a) {
+	if (length_ + a.length_ < length_) {
+		throw std::overflow_error("overflow detected concatenating strings with + operator");
+	}
 	resize(length_ + a.length_);
 	memcopy(a.content_, content_ + length_, a.length_);
 	length_ += a.length_;
@@ -256,6 +262,9 @@ void String::insert(size_t index, char* str) {
 		len++;
 	}
 
+	if (length_ + len < length_) {
+		throw std::overflow_error("overflow detected inserting char* string");
+	}
 	resize(length_ + len);
 	memcopy(content_ + index, content_ + index + len, length_ - index);
 	memcopy(str, content_ + index, len);
@@ -267,6 +276,10 @@ void String::insert(size_t index, char* str) {
 void String::insert(size_t index, String const& str) {
 	if (index > length_) {
 		throw new std::out_of_range("index out of bounds");
+	}
+
+	if (length_ + str.length_ < length_) {
+		throw std::overflow_error("overflow detected inserting string");
 	}
 	resize(length_ + str.length_);
 	memcopy(content_ + index, content_ + index + str.length_, length_ - index);
