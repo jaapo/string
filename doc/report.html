@@ -1,0 +1,39 @@
+<!doctype html public "-//W3C//DTD HTML 4.0 Transitional //EN">
+<html>
+<head>
+  <meta name="GENERATOR" content="mkd2html 2.1.7 DL=BOTH ID-ANCHOR GITHUB-TAGS FENCED-CODE">
+  <meta http-equiv="Content-Type"
+        content="text/html; charset=UTF8">      <link rel="stylesheet"
+        type="text/css"
+        href="markdown.css" />
+</head>
+<body>
+<h2>Software Design (C++), 2014</h2>
+
+<h1>Course project report</h1>
+
+<pre><code>Aaro Lehikoinen
+15.12.2014
+</code></pre>
+
+<p>String class provides easy and safe string operations, which makes programming much easier, since almost all programs use strings. This C++ class String is a simple and safe implementation for basic small string operations. It&rsquo;s not performance optimized, but works well with small strings.</p>
+
+<p>Strings are saved as an array of <code>char</code>s. This internal data structure is allocated more memory if some operation adds chars to the string. All operations allocate only required amount of memory. To optimize for longer strings and heavy usage of concatenation, this behavior could be changed. The amount of allocated memory is never reduced, only more is allocated.</p>
+
+<p>Class invariant of String states that the length of the stored string should be less or equals the size of allocaten memory and if the size of allocated memory is 0, the pointer to the data should be a null pointer.</p>
+
+<p>The class has one helper function <code>memcopy()</code> which copies a block of memory elsewhere. This function can be used also with overlapping memory segments, it detects them and copies the memory safely. Before realizing this was necessary, it caused some confusion.</p>
+
+<p>Basic operators are overloaded and a string literal constructor is implemented. Simple iterators exists. Stream operators <code>&lt;&lt;</code> and <code>&gt;&gt;</code> are implemented. <code>&lt;&lt;</code> operator reads the stream until the stream is closed (EOF or error).</p>
+
+<p>All functions check for pre-conditions and throws an exception if pre-conditions are not met. Post-conditions are checked after every public funtion that should leave the object to a consistent state.</p>
+
+<h2>Usage</h2>
+
+<p>This program has been coded and tested in a Linux environment and uses GCC C++11 compiler. Attached Makefiles should provide all necessary commands to compile, test and execute the program.</p>
+
+<p>Build the program by executing command <code>make build</code>. A &ldquo;production&rdquo; version with asserts disables can be build with <code>make build-prod</code>. Build binaries can be found from <code>bin</code> directory.</p>
+
+<p>To run build and run tests type <code>make test</code> to terminal. This prints all the test descriptions, it&rsquo;s passing status and possible errors.</p>
+</body>
+</html>
