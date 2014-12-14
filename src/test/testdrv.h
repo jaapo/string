@@ -1,6 +1,8 @@
 #include <string>
 #include <vector>
 
+#define Assert assert
+
 class Test {
 	private:
 		std::string name_;

@@ -1,6 +1,10 @@
 #include "string.h"
 #include <stdexcept>
+
+#ifndef Assert
 #include <cassert>
+#define Assert assert
+#endif
 
 //private functions
 void String::reset() {
@@ -19,7 +23,7 @@ bool String::check() {
 //reallocate more memory
 void String::resize(size_t new_size) {
 	if (size_ >= new_size) return;
-	assert(new_size >= length_);
+	Assert(new_size >= length_);
 
 	char* new_content = new char[new_size];
 
@@ -64,7 +68,7 @@ String::String(char* literal) {
 		content_[i] = literal[i];
 	}
 
-	assert(check());
+	Assert(check());
 }
 
 //default zero-arg constructor
@@ -74,7 +78,7 @@ String::String(): length_(0), content_(NULL), size_(0) {}
 String::String(String const& a): length_(a.length_), size_(a.length_) {
 	content_ = new char[length_];
 	memcopy(a.content_, content_, length_);
-	assert(check());
+	Assert(check());
 }
 
 //move constructor
@@ -95,7 +99,7 @@ String& String::operator=(String const& a) {
 	length_ = a.length_;
 	size_ = a.size_;
 	content_ = new char[size_];
-	assert(check());
+	Assert(check());
 	return *this;
 }
 
@@ -104,7 +108,7 @@ String String::operator=(String &a) {
 	length_ = a.length_;
 	size_ = a.size_;
 	content_ = content_;
-	assert(check());
+	Assert(check());
 	return *this;
 }
 
@@ -131,7 +135,7 @@ String operator+(String const& a, String const& b) {
 		new_content[i + a.length_] = b.content_[i];
 	}
 
-	assert(new_string.check());
+	Assert(new_string.check());
 	return new_string;
 }
 
@@ -140,7 +144,7 @@ String& String::operator+=(char const& a) {
 	resize(length_);
 	content_[length_ - 1] = a;
 
-	assert(check());
+	Assert(check());
 	return *this;
 }	
 
@@ -150,7 +154,7 @@ String& String::operator+=(String const& a) {
 	resize(length_);
 	memcopy(a.content_, content_ + oldlen, a.length_);
 
-	assert(check());
+	Assert(check());
 	return *this;
 }
 
@@ -216,7 +220,7 @@ char String::pop_back() {
 	char ret = content_[length_ - 1];
 	length_--;
 
-	assert(check());
+	Assert(check());
 	return ret;
 }
 
@@ -228,7 +232,7 @@ void String::insert(size_t index, char c) {
 	memcopy(content_ + index, content_ + index + 1, length_ - index);
 	content_[index] = c;
 	length_++;
-	assert(check());
+	Assert(check());
 }
 
 void String::insert(size_t index, char* str) {
@@ -245,7 +249,7 @@ void String::insert(size_t index, char* str) {
 	memcopy(str, content_ + index, len);
 
 	length_ += len;
-	assert(check());
+	Assert(check());
 }
 
 void String::insert(size_t index, String const& str) {
@@ -257,7 +261,7 @@ void String::insert(size_t index, String const& str) {
 	memcopy(str.content_, content_ + index, str.length_);
 
 	length_ += str.length_;
-	assert(check());
+	Assert(check());
 }
 
 void String::erase(size_t from, size_t to) {
@@ -268,7 +272,7 @@ void String::erase(size_t from, size_t to) {
 	size_t len = to - from + 1;
 	memcopy(content_ + to + 1, content_ + from, length_ - to - 1);
 	length_ -= len;
-	assert(check());
+	Assert(check());
 }
 
 void String::swap(String& a) {
@@ -307,7 +311,7 @@ String::iterator& String::iterator::operator++() {
 	}
 
 	pos_++;
-	assert(check());
+	Assert(check());
 	return *this;
 }
 
