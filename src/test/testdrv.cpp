@@ -6,18 +6,52 @@
 using std::string;
 
 //Test class
-Test::Test(string name, string desc, bool (*testFunction)()): 
-	name_ (name),
+Test::Test(string desc, void (*testFunction)()): 
  	desc_ (desc), 
-	testFunction(testFunction) {}
+	testFunction(testFunction),
+	passed_(false) {}
+
+Test::Test(Test const& t): 
+ 	desc_ (t.desc_), 
+	testFunction(t.testFunction),
+	passed_(t.passed_),
+	result_(t.result_){
+		//std::cout<< "ctor called " << t.desc_ << '\n';
+	}
+
+Test::Test(Test&& t): 
+ 	desc_ (t.desc_), 
+	testFunction(t.testFunction),
+	passed_(t.passed_),
+	result_(t.result_){
+		//std::cout<< "ctor&& called " << t.desc_ << '\n';
+	}
+
+Test& Test::operator=(Test const& t) {
+	desc_ = t.desc_;
+	testFunction = t.testFunction;
+	passed_ = t.passed_;
+	result_ = t.result_;
+	//std::cout << "copy assignment called " << t.desc_ << '\n';
+}
+
+Test Test::operator=(Test &t) {
+	desc_ = t.desc_;
+	testFunction = t.testFunction;
+	passed_ = t.passed_;
+	result_ = t.result_;
+	//std::cout << "move assignment called " << t.desc_ << '\n';
+}
+
 
 void Test::run() {
-	bool ret = false;
+	bool ret = true;
 
 	try {
-		ret = (*testFunction)();
+		(*testFunction)();
 	} catch(const std::exception &e) {
-		result_ = e.what();
+		result_ = std::string("Exception thrown: ") + std::string(e.what());
+		ret = false;
 	}
 
 	passed_ = ret;
@@ -30,10 +64,6 @@ bool Test::passed() {
 
 string Test::result() {
 	return result_;
-}
-
-string Test::name() {
-	return name_;
 }
 
 string Test::desc() {
@@ -56,11 +86,13 @@ void TestSet::runAll() {
 	ok_ = 0;
 	fail_ = 0;
 
-	for(auto test : tests_) {
-		test.run();
+	//for(auto test : tests_) {
+	for(int i = 0;i < tests_.size();i++) {
+		//std::cout << "running: " << tests_[i].desc() << std::endl;
+		tests_[i].run();
 		ran_++;
 
-		if (test.passed()) {
+		if (tests_[i].passed()) {
 			ok_++;
 		} else {
 			fail_++;
@@ -69,6 +101,9 @@ void TestSet::runAll() {
 }
 
 void TestSet::summary() {
+	std::cout << "Test summary" << std::endl;
+	std::cout << "============" << std::endl;
+
 	if(fail_ == 0) {
 		std::cout << "all tests passed!" << std::endl;
 	} else {
@@ -76,26 +111,22 @@ void TestSet::summary() {
 	}
 	std::cout << std::endl;
 
-	//markdown syntax table
-	std::cout << "| tests | passed | failed | percent |" << std::endl;
-	std::cout << "| ----- | ------ | ------ | ------- |" << std::endl;
-	std::cout << "|" << ran_ << " | " << ok_ << " | " << fail_ << " | " << (ok_/ran_)*100 << "|" << std::endl << std::endl;
+	std::cout << "tests: " << ran_ << std::endl;
+	std::cout << "passed: " << ok_ << std::endl;
+	std::cout << "failed: " << fail_ << std::endl;
 }
 
-void TestSet::details(bool withDesc, bool failsOnly) {
-	//markdown syntax table
-	std::cout << "| test | status |" << (withDesc ? " description |" : "") << " error |" << std::endl;
-	std::cout << "| ---- | ------ |" << (withDesc ? " ----------- |" : "") << " ---- |" << std::endl;
-
+void TestSet::details() {
+	/*for(int i = 0;i < tests_.size();i++) {
+			std::cout << tests_[i].passed() << std::endl;
+	}*/
 	for(auto test : tests_) {
-		if(!test.passed() || !failsOnly) {
+			//std::cout << test.passed() << std::endl;
 			std::cout 
-				<< "| " << test.name() 
-				<< " | " << (test.passed() ? "ok" : "fail")
-				<< (withDesc ? " | " + test.desc() : "")
-				<< " | " << test.result() 
-				<< " |" << std::endl;
-		}
+				<< (test.passed() ? "ok    " : "fail  ")
+				<< test.desc()
+				<< (test.passed() ? "" : "      "  +  test.result())
+			 << std::endl;
 	}
 	std::cout << std::endl;
 }

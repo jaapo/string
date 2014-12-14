@@ -38,6 +38,7 @@ class String {
 		void insert(size_t index, String const& str);
 		void erase(size_t from, size_t to);
 		void swap(String& a);
+		char* to_C_string();
 
 	friend String operator+(String const& a, String const& b);
 

@@ -1,6 +1,10 @@
 #include "string.h"
 #include <stdexcept>
 
+#ifdef TEST
+#include "test/testdrv.h"
+#endif
+
 #ifndef Assert
 #include <cassert>
 #define Assert assert
@@ -54,17 +58,29 @@ void memcopy(char* src, char* dst, size_t len) {
 }
 
 //constructors
-String::String(size_t size): length_(0), size_(size) {
-	content_ = new char[size];
+String::String(size_t size): length_(0), content_(NULL), size_(size) {
+	if (size > 0) {
+		content_ = new char[size];
+	}
+	Assert(check());
 }
 
 //string literal constructor
 String::String(char* literal) {
-	for(length_ = 0; literal[length_]; length_++);
-	size_ = length_;
-	content_ = new char[length_];
+	size_t len = 0;
+	while(literal[len]) len++;
 
-	for(size_t i = 0; i < length_; i++) {
+	if(len == 0) {
+		content_ = NULL;
+		reset();
+		return;
+	}
+
+	length_ = len;
+	size_ = len;
+	content_ = new char[len];
+
+	for(size_t i = 0; i < len; i++) {
 		content_[i] = literal[i];
 	}
 
@@ -98,7 +114,12 @@ String::~String() {
 String& String::operator=(String const& a) {
 	length_ = a.length_;
 	size_ = a.size_;
-	content_ = new char[size_];
+	if (size_ > 0) {
+		content_ = new char[size_];
+		memcopy(a.content_, content_, length_);
+	} else {
+		content_ = NULL;
+	}
 	Assert(check());
 	return *this;
 }
@@ -185,13 +206,13 @@ std::ostream& operator<<(std::ostream& out, String const& a) {
 
 std::istream& operator>>(std::istream& in, String &a) {
 	char temp;
-	size_t length = 0;
+	//size_t length = 0;
 
-	a.reset();
+	//a.reset();
 
 	//will read until EOF or error
 	while(in >> temp) {
-		length++;
+//		length++;
 		a += temp;
 	}
 
@@ -287,6 +308,13 @@ void String::swap(String& a) {
 	size_ = tmp_size;
 	length_ = tmp_len;
 	content_ = tmp_content;
+}
+
+char* String::to_C_string() {
+	char* cstr = new char[length_ + 1];
+	memcopy(content_, cstr, length_);
+	cstr[length_] = '\0';
+	return cstr;
 }
 
 //iterator internals
