@@ -1,4 +1,4 @@
 String
 ======
 
-This is a course project
+This is a C++ course project
